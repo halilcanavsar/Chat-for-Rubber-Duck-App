@@ -1,31 +1,27 @@
 import './chat.css';
 import io from 'socket.io-client';
-import { useEffect, useState } from 'react';
 
-const socket = io('http://localhost:3000');
+import { useEffect } from 'react';
+
+const backendPORT = process.env.REACT_APP_BACKEND_PORT || '3001';
+
+const socket = io(`http://localhost:${backendPORT}`, {
+  transports: ['websocket'],
+});
+
+// const socket = socketIOClient(`http://localhost:${backendPORT}`);
 
 function Chat() {
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
-
-  const sendMessage = () => {
-    socket.emit('sendMessage', { message });
-  };
-
-  useEffect(() => {
-    socket.on('receiveMessage', (data: String) => {});
-  }, [socket]);
+  // useEffect(() => {
+  //   socket.on('message', (message) => {
+  //     console.log(message);
+  //   });
+  // }, []);
 
   return (
     <div className="chat">
       <div className="chat-form">
-        <input
-          type="text"
-          placeholder="Type a message..."
-          onChange={(event) => {
-            setMessage(event.target.value);
-          }}
-        />
+        <input type="text" placeholder="Type a message..." />
         <button>Send</button>
       </div>
     </div>

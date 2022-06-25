@@ -1,27 +1,23 @@
 const Koa = require('koa');
-const App = new Koa();
-const parser = require('koa-bodyparser');
+const app = new Koa();
 const cors = require('@koa/cors');
-const PORT = process.env.PORT || 3002;
-const http = require('http');
 
-App.use(parser()).use(cors());
 
-App.listen(PORT, () => {
-  console.log(`🚀 Server listening at http://127.0.0.1:${PORT}/ 🚀`);
+const server = require('http').createServer(app.callback());
+const io = require('socket.io')(server, {
+  origin: 'http://localhost:3000',
 });
 
+app.use(cors());
 
 
-
-const server = http.createServer(App);
-
-
-
-
-
-
-
-
-
-
+io.on('connection', function (socket: any) {
+  console.log('connected');
+  socket.on('chat', function (msg: any) {
+    console.log(msg);
+    io.emit('chat', msg + '222222');
+  });
+});
+server.listen(3001, () => {
+  console.log('Application is starting on port 3001');
+});
