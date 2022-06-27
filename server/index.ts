@@ -23,7 +23,6 @@ io.on('connection', function (socket: any) {
   console.log('connected');
 
   socket.on('sendMessage', function (data: any) {
-    console.log(data);
     io.emit('receiveMessage', data);
   }
   );
