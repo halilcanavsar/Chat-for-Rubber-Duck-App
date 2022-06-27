@@ -1,7 +1,7 @@
 import './chat.scss';
 import io from 'socket.io-client';
 import { useEffect, useState } from 'react';
-import e from 'express';
+import { format } from 'timeago.js';
 
 const backendPORT = process.env.REACT_APP_BACKEND_PORT || '3001';
 
@@ -9,21 +9,31 @@ const socket = io(`http://localhost:${backendPORT}`, {
   transports: ['websocket'],
 });
 
+interface ArrivalMessage {
+  text: String | any;
+  time: Date;
+}
+
 function Chat() {
-  const [messages, setMessages] = useState([] as any);
-  const [newMessage, setNewMessage] = useState('');
+  const [messages, setMessages] = useState([] as ArrivalMessage[]);
+  // const [newMessage, setNewMessage] = useState('');
+  const [arrivalMessage, setArrivalMessage] = useState({
+    text: '',
+    time: new Date(),
+  } as ArrivalMessage);
 
   const sendMessage = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    socket.emit('sendMessage', newMessage);
-    console.log(newMessage);
-    setNewMessage('');
+    socket.emit('sendMessage', arrivalMessage);
+    setArrivalMessage({
+      text: '',
+      time: new Date(),
+    });
   };
 
   useEffect(() => {
-    console.log(messages);
-    socket.on('receiveMessage', (message: any) => {
-      setMessages([...messages, message]);
+    socket.on('receiveMessage', (data: any) => {
+      setMessages([...messages, data]);
     });
   }, [messages]);
 
@@ -33,8 +43,10 @@ function Chat() {
         <form onSubmit={sendMessage}>
           <input
             type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            value={arrivalMessage.text}
+            onChange={(e) =>
+              setArrivalMessage({ ...arrivalMessage, text: e.target.value })
+            }
             placeholder="Type a message..."
           />
           <button type="submit">Send</button>
@@ -42,13 +54,11 @@ function Chat() {
       </div>
 
       <div className="chat-messages">
-        {messages.map((message: String) => (
+        {messages.map((message: any) => (
           <div className="chat-message">
-            <div className="chat-message-text">{message}</div>
+            <div className="chat-message-text">{message.text}</div>
 
-            <div className="chat-message-time">
-              <span>{new Date().toLocaleTimeString()}</span>
-            </div>
+            <div className="chat-message-time">{format(message.time)}</div>
 
             <div className="chat-message-avatar">
               <img src="https://via.placeholder.com/150" alt="avatar" />
