@@ -1,6 +1,7 @@
 import './chat.scss';
 import io from 'socket.io-client';
 import { useEffect, useState } from 'react';
+
 import { format } from 'timeago.js';
 import Prism from 'prismjs';
 import '../themes/prism-one-dark.css';
@@ -40,7 +41,7 @@ function Chat() {
     'typescript',
   ];
 
-  const handleChange = (event: any) => {
+  const handleLanguageChange = (event: any) => {
     arrivalMessage.language = event.target.value;
   };
 
@@ -74,14 +75,6 @@ function Chat() {
       <img src="../assets/send-icon.png" alt="" />
       <div className="chat-form">
         <form className="text-area-form" onSubmit={sendMessage}>
-          {/* <input
-            type="text"
-            value={arrivalMessage.text}
-            onChange={(e) =>
-              setArrivalMessage({ ...arrivalMessage, text: e.target.value })
-            }
-            placeholder="Type a message..."
-          /> */}
           <textarea
             value={arrivalMessage.text}
             onChange={(e) =>
@@ -93,9 +86,10 @@ function Chat() {
             <img src={require('../assets/send-icon.png')} alt='send icon'></img>
           </button>
         </form>
+
         <form className="input-type-form">
           {showLangDropDown ? (
-            <select onChange={handleChange} name="languages">
+            <select onChange={handleLanguageChange} name="languages">
               <option value="" selected>
                 Select a language
               </option>
@@ -107,7 +101,17 @@ function Chat() {
             </select>
           ) : null}
           <button className="input-type-btn" onClick={handleInputTypeClick}>
-            <img src="../assets/code-icon-32.png" alt="code-icon" />
+            {showLangDropDown ? (
+              <img
+                src={require('../assets/text-button-icon-48.png')}
+                alt="code-icon"
+              />
+            ) : (
+              <img
+                src={require('../assets/code-icon-32.png')}
+                alt="code-icon"
+              />
+            )}
           </button>
         </form>
       </div>

@@ -30,22 +30,18 @@
     font-size: 16px;
   }
   button {
-  align-items: center;
-  width: 10%;
-  height: 50%;
-  padding: 10px;
-  border: none;
-  outline: none;
-  overflow: hidden;
-  border-radius: 5%;
-  background-color: lightgray;
-  opacity: 1;
-  font-size: 16px;
-  cursor: pointer;
-
-img {
-  color: black;
-
-}
+    width: 5%;
+    padding: 10px;
+    border: none;
+    border-radius: 5%;
+    background: #3022ab 0% 0% no-repeat padding-box;
+    opacity: 1;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    img {
+      width: 20px;
+      height: 20px;
+    }
   }
 }
