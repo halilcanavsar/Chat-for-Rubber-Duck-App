@@ -1,4 +1,4 @@
-import './chat.css';
+import './chat.scss';
 import io from 'socket.io-client';
 import { useEffect, useState } from 'react';
 import e from 'express';
@@ -28,7 +28,7 @@ function Chat() {
   }, [messages]);
 
   return (
-    <div className="chat">
+    <div className="chat-container">
       <div className="chat-form">
         <form onSubmit={sendMessage}>
           <input
