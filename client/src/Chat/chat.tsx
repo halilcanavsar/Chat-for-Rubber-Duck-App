@@ -39,6 +39,7 @@ function Chat() {
 
   return (
     <div className="chat-container">
+      <img src="../assets/send-icon.png" alt="" />
       <div className="chat-form">
         <form onSubmit={sendMessage}>
           <input
@@ -49,7 +50,7 @@ function Chat() {
             }
             placeholder="Type a message..."
           />
-          <button type="submit">Send</button>
+          <button type="submit" ><img src="../assets/send-icon.png" alt="" /></button>
         </form>
       </div>
 
