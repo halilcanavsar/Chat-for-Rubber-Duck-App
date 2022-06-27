@@ -10,7 +10,6 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-java';
 import 'prismjs/components/prism-python';
 
-
 const backendPORT = process.env.REACT_APP_BACKEND_PORT || '3001';
 
 const socket = io(`http://localhost:${backendPORT}`, {
@@ -81,10 +80,25 @@ function Chat() {
               setArrivalMessage({ ...arrivalMessage, text: e.target.value })
             }
             placeholder="Type a message..."
+            required
           />
-          <button className="send-btn" type="submit" >
-            <img src={require('../assets/send-icon.png')} alt='send icon'></img>
-          </button>
+          {arrivalMessage.text === '' ? (
+            <button className="send-btn" type="submit" disabled>
+              <img
+                src={require('../assets/send-icon.png')}
+                alt="send icon"
+                className="send-icon"
+              ></img>
+            </button>
+          ) : (
+            <button className="send-btn" type="submit">
+              <img
+                src={require('../assets/send-icon.png')}
+                alt="send icon"
+                className="send-icon"
+              ></img>
+            </button>
+          )}
         </form>
 
         <form className="input-type-form">

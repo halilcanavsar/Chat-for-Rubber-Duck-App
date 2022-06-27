@@ -5,8 +5,11 @@ app.use(cors());
 
 //Chat----
 
-export const server = require('http').createServer(app.callback());
+const server = require('http').createServer(app.callback());
 
+server.listen(3001, () => {
+  console.log('Application is starting on port 3001');
+});
 
 
 const io = require('socket.io')(server, {
@@ -28,9 +31,6 @@ io.on('connection', function (socket: any) {
   );
 });
 
-server.listen(3001, () => {
-  console.log('Application is starting on port 3001');
-});
 
 
 
