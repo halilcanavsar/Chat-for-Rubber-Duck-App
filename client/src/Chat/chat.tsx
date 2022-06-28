@@ -30,7 +30,7 @@ interface ArrivalMessage {
 
 function Chat() {
   const [messages, setMessages] = useState([] as ArrivalMessage[]);
-  const [imgSources, setImgSources] = useState('');
+  const [imgSources, setImgSources] = useState();
   const [file, setFile] = useState();
   const [showLangDropDown, setShowLangDropDown] = useState(false);
   const [arrivalMessage, setArrivalMessage] = useState({
@@ -40,6 +40,8 @@ function Chat() {
     type: '',
     mimeType: '',
     fileName: '',
+    body: undefined,
+    imgSource: '',
   } as ArrivalMessage);
 
   const langList = [
@@ -61,27 +63,14 @@ function Chat() {
   };
 
   const createMessage = (e: any) => {
-    if (file) {
-      //creating image object
-      const messageObject = {
-        text: file.name,
-        time: new Date(),
-        type: 'file',
-        //@ts-ignore
-        mimeType: file.type,
-        body: file,
-      };
-      setArrivalMessage(messageObject);
-    } else {
-      //creating text object
-      const messageObject = {
-        text: e.target.value,
-        time: new Date(),
-        language: arrivalMessage.language,
-        type: 'text',
-      };
-      setArrivalMessage(messageObject);
-    }
+    //creating text object
+    const messageObject = {
+      text: e.target.value,
+      time: new Date(),
+      language: arrivalMessage.language,
+      type: 'text',
+    };
+    setArrivalMessage(messageObject);
   };
 
   const sendMessage = (e: { preventDefault: () => void }) => {
@@ -109,8 +98,8 @@ function Chat() {
         type: e.target.files[0].type,
       }),
       type: 'file',
+      imgSource: URL.createObjectURL(e.target.files[0]),
     });
-    console.log('files', e.target.files[0]);
     setFile(e.target.files[0]);
   };
 
@@ -247,7 +236,7 @@ function Chat() {
                   )}
                 </div>
               ) : (
-                <img src={imgSources} alt={message.fileName} />
+                <img src={message.imgSource} alt={message.fileName} />
               )}
 
               <div className="chat-message-time">{format(message.time)}</div>
