@@ -1,9 +1,9 @@
-//@ts-nocheck
 import './chat.scss';
 import io from 'socket.io-client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import Message from '../message/message';
+import { ArrivalMessage } from '../interfaces';
 
-import { format } from 'timeago.js';
 import Prism from 'prismjs';
 import '../themes/prism-one-dark.css';
 import 'prismjs/components/prism-typescript';
@@ -17,16 +17,6 @@ const backendPORT = process.env.REACT_APP_BACKEND_PORT || '3001';
 const socket = io(`http://localhost:${backendPORT}`, {
   transports: ['websocket'],
 });
-
-// interface ArrivalMessage {
-//   text: string;
-//   time: Date;
-//   language?: string;
-//   type?: string;
-//   mimeType?: string;
-//   body?: File;
-//   imgSource?: string;
-// }
 
 function Chat() {
   const [messages, setMessages] = useState([] as ArrivalMessage[]);
@@ -42,6 +32,8 @@ function Chat() {
     imgSource: '',
   } as ArrivalMessage);
 
+  const scrollRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+
   const langList = [
     'javascript',
     'css',
@@ -51,16 +43,18 @@ function Chat() {
     'typescript',
   ];
 
-  const handleLanguageChange = (event: any) => {
+  const handleLanguageChange = (event: {
+    target: { value: string | undefined };
+  }) => {
     arrivalMessage.language = event.target.value;
   };
 
-  const handleInputTypeClick = (e: any) => {
+  const handleInputTypeClick = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setShowLangDropDown(!showLangDropDown);
   };
 
-  const createMessage = (e: any) => {
+  const createMessage = (e: { target: { value: string } }) => {
     //creating text object
     const messageObject = {
       text: e.target.value,
@@ -80,22 +74,21 @@ function Chat() {
       language: '',
       type: '',
       mimeType: '',
-      fileName: '',
     });
   };
 
   const selectFile = (e: ChangeEvent<HTMLInputElement>) => {
-    setArrivalMessage({
-      ...arrivalMessage,
-      text: e.target.files[0].name,
-      fileName: e.target.files[0].name,
-      mimeType: e.target.files[0].type,
-      blob: new Blob([e.target.files[0]], {
-        type: e.target.files[0].type,
-      }),
-      type: 'file',
-      imgSource: URL.createObjectURL(e.target.files[0]),
-    });
+    e.target.files &&
+      setArrivalMessage({
+        ...arrivalMessage,
+        text: e.target.files[0].name,
+        mimeType: e.target.files[0].type,
+        blob: new Blob([e.target.files[0]], {
+          type: e.target.files[0].type,
+        }),
+        type: 'file',
+        imgSource: URL.createObjectURL(e.target.files[0]),
+      });
   };
 
   useEffect(() => {
@@ -103,7 +96,7 @@ function Chat() {
   }, [messages]);
 
   useEffect(() => {
-    socket.on('receiveMessage', (data: any) => {
+    socket.on('receiveMessage', (data) => {
       if (data.type === 'file') {
         console.log('data', data);
         const blob = new Blob([data.blob], { type: data.mimeType });
@@ -113,6 +106,12 @@ function Chat() {
       }
       setMessages([...messages, data]);
     });
+  }, [messages]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
   return (
@@ -186,48 +185,14 @@ function Chat() {
       </div>
 
       <div className="chat-messages">
-        {messages.map(
-          (
-            message: any //chat messages
-          ) => (
-            <div className="chat-message">
-              {message.type === 'text' ? (
-                <div className="chat-message-text">
-                  {message.language === '' ? (
-                    <div className="chat-message-text">{message.text}</div>
-                  ) : (
-                    <div className="chat-message-text">
-                      <pre>
-                        <code className={`language-${message.language}`}>
-                          {message.text}
-                        </code>
-                      </pre>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <img src={message.imgSource} alt={message.fileName} />
-              )}
-
-              <div className="chat-message-time">{format(message.time)}</div>
-              <div className="chat-message-avatar">
-                <img src="https://via.placeholder.com/150" alt="avatar" />
-
-                <div className="chat-message-avatar-name">
-                  <span>John Doe</span>
-
-                  <span>
-                    <i className="fas fa-circle"></i>
-                  </span>
-                </div>
-
-                <div className="chat-message-avatar-status">
-                  <span>Online</span>
-                </div>
-              </div>
-            </div>
-          )
-        )}
+        {messages.map((message) => (
+          <div ref={scrollRef}>
+            <Message
+              key={message.time.toString() + message.text + message.language}
+              message={message}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
