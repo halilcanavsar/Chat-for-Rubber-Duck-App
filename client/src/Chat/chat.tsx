@@ -27,7 +27,6 @@ function Chat() {
     language: '',
     type: '',
     mimeType: '',
-    fileName: '',
     body: undefined,
     imgSource: '',
   } as ArrivalMessage);
@@ -65,7 +64,7 @@ function Chat() {
     setArrivalMessage(messageObject);
   };
 
-  const sendMessage = (e: { preventDefault: () => void }) => {
+  const sendMessage = (e: any) => {
     e.preventDefault();
     socket.emit('sendMessage', arrivalMessage);
     setArrivalMessage({
@@ -75,6 +74,7 @@ function Chat() {
       type: '',
       mimeType: '',
     });
+    e.target.reset();
   };
 
   const selectFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -98,7 +98,6 @@ function Chat() {
   useEffect(() => {
     socket.on('receiveMessage', (data) => {
       if (data.type === 'file') {
-        console.log('data', data);
         const blob = new Blob([data.blob], { type: data.mimeType });
 
         const fileReader = new FileReader();
@@ -116,7 +115,6 @@ function Chat() {
 
   return (
     <div className="chat-container">
-      <img src="../assets/send-icon.png" alt="" />
       <div className="chat-form">
         <form className="text-area-form" onSubmit={sendMessage}>
           {' '}
@@ -147,18 +145,24 @@ function Chat() {
           <input
             type="file"
             name="file"
-            id="file"
+            id="files"
+            className="hidden"
             accept="image/*"
             onChange={selectFile}
           />
+          <label htmlFor="files">
+            <img
+              src={require('../assets/upload-image-icon.png')}
+              alt="upload icon"
+              className="upload-image-icon"
+            ></img>
+          </label>
         </form>
 
         <form className="input-type-form">
           {showLangDropDown ? (
             <select onChange={handleLanguageChange} name="languages">
-              <option value="" selected>
-                Select a language
-              </option>
+              <option value="">Select a language</option>
               {langList.map((lang) => (
                 <option key={lang} value={lang}>
                   {lang}
@@ -180,13 +184,11 @@ function Chat() {
             )}
           </button>
         </form>
-
-        <form className="upload-image-form"></form>
       </div>
 
       <div className="chat-messages">
         {messages.map((message) => (
-          <div ref={scrollRef}>
+          <div ref={scrollRef} key={message.time.toString()}>
             <Message
               key={message.time.toString() + message.text + message.language}
               message={message}
