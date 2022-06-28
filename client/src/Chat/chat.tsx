@@ -18,20 +18,18 @@ const socket = io(`http://localhost:${backendPORT}`, {
   transports: ['websocket'],
 });
 
-interface ArrivalMessage {
-  text: string;
-  time: Date;
-  language?: string;
-  type?: string;
-  mimeType?: string;
-  body?: File;
-  imgSource?: string;
-}
+// interface ArrivalMessage {
+//   text: string;
+//   time: Date;
+//   language?: string;
+//   type?: string;
+//   mimeType?: string;
+//   body?: File;
+//   imgSource?: string;
+// }
 
 function Chat() {
   const [messages, setMessages] = useState([] as ArrivalMessage[]);
-  const [imgSources, setImgSources] = useState();
-  const [file, setFile] = useState();
   const [showLangDropDown, setShowLangDropDown] = useState(false);
   const [arrivalMessage, setArrivalMessage] = useState({
     text: '',
@@ -84,8 +82,6 @@ function Chat() {
       mimeType: '',
       fileName: '',
     });
-
-    setFile();
   };
 
   const selectFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -100,7 +96,6 @@ function Chat() {
       type: 'file',
       imgSource: URL.createObjectURL(e.target.files[0]),
     });
-    setFile(e.target.files[0]);
   };
 
   useEffect(() => {
@@ -115,41 +110,10 @@ function Chat() {
 
         const fileReader = new FileReader();
         fileReader.readAsArrayBuffer(blob);
-        fileReader.onload = () => {
-          // const arrayBuffer = fileReader.result;
-          // const blob = new Blob([arrayBuffer], { type: data.mimeType });
-          const url = URL.createObjectURL(blob);
-          setImgSources(url);
-        };
       }
-
       setMessages([...messages, data]);
-
-      //   const recievedMessageBlob = new Blob([data.blob], {
-      //     type: data.mimeType,
-      //   });
-      //   data.blob = blob;
-      // }
-
-      // setMessages([...messages, data]);
     });
   }, [messages]);
-
-  // useEffect(() => {
-  //   messages.forEach((message: any) => {
-  //     if (message.type === file) {
-
-  //     }
-
-  //   if (arrivalMessage.blob) {
-  //     console.log(arrivalMessage.blob);
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(arrivalMessage.blob);
-  //     reader.onloadend = () => {
-  //       setImgSources(reader.result);
-  //     };
-  //   }
-  // }, [arrivalMessage.blob]);
 
   return (
     <div className="chat-container">
@@ -181,7 +145,13 @@ function Chat() {
               ></img>
             </button>
           )}
-          <input type="file" name="file" id="file" onChange={selectFile} />
+          <input
+            type="file"
+            name="file"
+            id="file"
+            accept="image/*"
+            onChange={selectFile}
+          />
         </form>
 
         <form className="input-type-form">

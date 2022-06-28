@@ -53,3 +53,8 @@
   filter: grayscale(100%);
   opacity: 0.5;
 }
+
+img {
+  max-width: 40%;
+  max-height: 40%;
+}
