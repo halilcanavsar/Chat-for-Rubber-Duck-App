@@ -53,6 +53,17 @@ function Chat() {
     setShowLangDropDown(!showLangDropDown);
   };
 
+  const onEnterPress = (e: {
+    keyCode: number;
+    shiftKey: boolean;
+    preventDefault: () => void;
+  }) => {
+    if (e.keyCode === 13 && e.shiftKey === false) {
+      e.preventDefault();
+      sendMessage(e);
+    }
+  };
+
   const createMessage = (e: { target: { value: string } }) => {
     //creating text object
     const messageObject = {
@@ -74,7 +85,10 @@ function Chat() {
       type: '',
       mimeType: '',
     });
-    e.target.reset();
+
+    if (showLangDropDown) {
+      setShowLangDropDown(!showLangDropDown);
+    }
   };
 
   const selectFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -123,66 +137,70 @@ function Chat() {
             value={arrivalMessage.text}
             onChange={createMessage}
             placeholder="Type a message..."
+            onKeyDown={onEnterPress}
             required
           />
-          {arrivalMessage.type !== 'file' && arrivalMessage.text === '' ? ( //button for sending message
-            <button className="send-btn" type="submit" disabled>
-              <img
-                src={require('../assets/send-icon.png')}
-                alt="send icon"
-                className="send-icon"
-              ></img>
-            </button>
-          ) : (
-            <button className="send-btn" type="submit">
-              <img
-                src={require('../assets/send-icon.png')}
-                alt="send icon"
-                className="send-icon"
-              ></img>
-            </button>
-          )}
-          <input
-            type="file"
-            name="file"
-            id="files"
-            className="hidden"
-            accept="image/*"
-            onChange={selectFile}
-          />
-          <label htmlFor="files">
-            <img
-              src={require('../assets/upload-image-icon.png')}
-              alt="upload icon"
-              className="upload-image-icon"
-            ></img>
-          </label>
-        </form>
-
-        <form className="input-type-form">
-          {showLangDropDown ? (
-            <select onChange={handleLanguageChange} name="languages">
-              <option value="">Select a language</option>
-              {langList.map((lang) => (
-                <option key={lang} value={lang}>
-                  {lang}
-                </option>
-              ))}
-            </select>
-          ) : null}
-          <button className="input-type-btn" onClick={handleInputTypeClick}>
-            {showLangDropDown ? (
-              <img
-                src={require('../assets/text-button-icon-48.png')}
-                alt="code-icon"
-              />
+          <div className="buttons">
+            {arrivalMessage.type !== 'file' && arrivalMessage.text === '' ? ( //button for sending message
+              <button className="send-btn" type="submit" disabled>
+                <img
+                  src={require('../assets/send-icon.png')}
+                  alt="send icon"
+                  className="send-icon"
+                ></img>
+              </button>
             ) : (
-              <img
-                src={require('../assets/code-icon-32.png')}
-                alt="code-icon"
-              />
+              <button className="send-btn" type="submit">
+                <img
+                  src={require('../assets/send-icon.png')}
+                  alt="send icon"
+                  className="send-icon"
+                ></img>
+              </button>
             )}
-          </button>
+            <div className="img-code-buttons">
+              {showLangDropDown ? (
+                <select onChange={handleLanguageChange} name="languages">
+                  <option value="">Select a language</option>
+                  {langList.map((lang) => (
+                    <option key={lang} value={lang}>
+                      {lang}
+                    </option>
+                  ))}
+                </select>
+              ) : null}
+              <button className="input-type-btn" onClick={handleInputTypeClick}>
+                {showLangDropDown ? (
+                  <img
+                    src={require('../assets/text-button-icon-48.png')}
+                    alt="code-icon"
+                  />
+                ) : (
+                  <img
+                    src={require('../assets/code-icon-32.png')}
+                    alt="code-icon"
+                  />
+                )}
+              </button>
+              <input
+                type="file"
+                name="file"
+                id="files"
+                className="hidden"
+                accept="image/*"
+                onChange={selectFile}
+              />
+              <button className="file-btn" type="button">
+                <label htmlFor="files" className="file-label">
+                  <img
+                    src={require('../assets/upload-image-icon.png')}
+                    alt="upload icon"
+                    className="upload-image-icon"
+                  ></img>
+                </label>
+              </button>
+            </div>
+          </div>
         </form>
       </div>
 
