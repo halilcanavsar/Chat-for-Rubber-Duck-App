@@ -167,3 +167,10 @@
   position: relative;
   align-self: flex-end;
 }
+
+.emoji-picker {
+  //it shouldn't push anything
+  position: fixed;
+  bottom: 15%;
+  left: 2%;
+}
